@@ -17,6 +17,10 @@ impl<T: Config> UniqueAssetDetails<T> {
 		UniqueAssetDetails { creator, metadata, supply }
 	}
 
+	pub fn creator(&self) -> T::AccountId {
+		self.creator.clone()
+	}
+
 	pub fn metadata(&self) -> Vec<u8> {
 		self.metadata.clone()
 	}

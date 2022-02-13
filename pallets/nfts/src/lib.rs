@@ -68,13 +68,17 @@ pub mod pallet {
 		Unknown,
 		/// The signing account does not own any amount of this asset
 		NotOwned,
+		/// Supply must be positive
+		NoSupply,
 	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		#[pallet::weight(0)]
-		pub fn create(origin: OriginFor<T>, metadata: Vec<u8>, supply: u128) -> DispatchResult {
+		pub fn mint(origin: OriginFor<T>, metadata: Vec<u8>, supply: u128) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
+
+			ensure!(supply > 0, Error::<T>::NoSupply);
 
 			let id = Self::nonce();
 			let details = UniqueAssetDetails::new(origin.clone(), metadata, supply);
@@ -90,6 +94,8 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn burn(origin: OriginFor<T>, asset_id: UniqueAssetId, amount: u128) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
+
+			ensure!(Self::unique_asset(asset_id).is_some(), Error::<T>::Unknown);
 			Self::ensure_own_some(asset_id, origin.clone())?;
 
 			let mut total_supply = 0;
@@ -123,9 +129,9 @@ pub mod pallet {
 			to: T::AccountId,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
-			Self::ensure_own_some(asset_id, origin.clone())?;
 
 			ensure!(Self::unique_asset(asset_id).is_some(), Error::<T>::Unknown);
+			Self::ensure_own_some(asset_id, origin.clone())?;
 
 			let mut transfered_amount = 0;
 			Account::<T>::mutate(asset_id, origin.clone(), |balance| {
