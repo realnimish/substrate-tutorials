@@ -2,19 +2,34 @@ use crate::{mock::*, Error};
 use frame_support::{assert_noop, assert_ok};
 
 #[test]
-fn it_works_for_default_value() {
+fn flip_value_ok() {
 	new_test_ext().execute_with(|| {
 		// Dispatch a signed extrinsic.
-		assert_ok!(FlipperModule::do_something(Origin::signed(1), 42));
-		// Read pallet storage and assert an expected result.
-		assert_eq!(FlipperModule::something(), Some(42));
+		assert_ok!(FlipperModule::set_value(Origin::signed(1), true));
+		// Read pallet storage and assert the value has been set as expected.
+		assert_eq!(FlipperModule::value(), Some(true));
+		// Flip de value.
+		assert_ok!(FlipperModule::flip_value(Origin::signed(1)));
+		// Read pallet storage and assert the value flipped as expected.
+		assert_eq!(FlipperModule::value(), Some(false));
 	});
 }
 
 #[test]
-fn correct_error_for_none_value() {
+fn flip_value_err_not_set() {
 	new_test_ext().execute_with(|| {
 		// Ensure the expected error is thrown when no value is present.
-		assert_noop!(FlipperModule::cause_error(Origin::signed(1)), Error::<Test>::NoneValue);
+		assert_noop!(FlipperModule::flip_value(Origin::signed(1)), Error::<Test>::NoneValue);
 	});
 }
+
+#[test]
+fn flip_value_err_already_set() {
+	new_test_ext().execute_with(|| {
+		// Dispatch a signed extrinsic.
+		assert_ok!(FlipperModule::set_value(Origin::signed(1), true));
+		// Ensure the expected error is thrown when value is already present.
+		assert_noop!(FlipperModule::set_value(Origin::signed(1), true), Error::<Test>::AlreadySet);
+	});
+}
+
