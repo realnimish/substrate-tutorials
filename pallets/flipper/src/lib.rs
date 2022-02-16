@@ -98,9 +98,9 @@ pub mod pallet {
 				// Return an error if the value has not been set.
 				None => Err(Error::<T>::NoneValue)?,
 				Some(old) => {
-					// Flip the value
+					// Flip the value.
 					let new = !old;
-					// Update the value in storage with the incremented result.
+					// Set the value in the storage.
 					<Value<T>>::put(new);
 
 					// Emit an event.
