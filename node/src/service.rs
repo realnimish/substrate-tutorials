@@ -177,7 +177,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
 					"Error hooking up remote keystore for {}: {}",
 					url, e
 				)))
-			}
+			},
 		};
 	}
 
