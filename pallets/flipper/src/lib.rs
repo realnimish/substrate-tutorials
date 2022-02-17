@@ -113,6 +113,8 @@ pub mod pallet {
 			}
 		}
 
-		// TODO :
+		// TODO : Make a callable function ```remove_value()```, 
+		// it should clear the storage and emmit an event to inform the user that it's been done.
+		// The function should return a DispatchResult and you will have to handle errors if some could occurs.
 	}
 }
