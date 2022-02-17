@@ -113,25 +113,6 @@ pub mod pallet {
 			}
 		}
 
-		/// This function remove the value from the storage.
-		#[pallet::weight(0)]
-		pub fn remove_value(origin: OriginFor<T>) -> DispatchResult {
-			let who = ensure_signed(origin)?;
-
-			// Check that there is something stored.
-			match <Value<T>>::get() {
-				// Return an error if the value has not been set.
-				None => Err(Error::<T>::NoneValue)?,
-				Some(_) => {
-					// Clear the storage
-					<Value<T>>::kill();
-
-					// Emit an event.
-					Self::deposit_event(Event::ValueRemoved(who));
-
-					Ok(())
-				},
-			}
-		}
+		// TODO :
 	}
 }
