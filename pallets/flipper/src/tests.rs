@@ -42,3 +42,21 @@ fn flip_value_err_not_set() {
 		assert_noop!(FlipperModule::flip_value(Origin::signed(1)), Error::<Test>::NoneValue);
 	});
 }
+
+#[test]
+fn remove_value_ok() {
+	new_test_ext().execute_with(|| {
+		// Dispatch a signed extrinsic.
+		assert_ok!(FlipperModule::set_value(Origin::signed(1), true));
+		// Remove the value from the storage
+		assert_ok!(FlipperModule::remove_value(Origin::signed(1)));
+	});
+}
+
+#[test]
+fn remove_value_err_not_set() {
+	new_test_ext().execute_with(|| {
+		// Ensure the expected error is thrown when no value is present.
+		assert_noop!(FlipperModule::remove_value(Origin::signed(1)), Error::<Test>::NoneValue);
+	});
+}

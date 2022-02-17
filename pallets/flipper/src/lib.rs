@@ -41,10 +41,12 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		// Event documentation should end with an array that provides descriptive names for event
-		/// parameters. [value, who]
+		/// A value has been stored [value, who]
 		ValueStored(bool, T::AccountId),
-		/// parameters. [new_value, who]
+		/// The stored value has been flipped [new_value, who]
 		ValueFlipped(bool, T::AccountId),
+		/// The stored value has been removed [who]
+		ValueRemoved(T::AccountId),
 	}
 
 	// Errors inform users that something went wrong.
@@ -105,6 +107,27 @@ pub mod pallet {
 
 					// Emit an event.
 					Self::deposit_event(Event::ValueFlipped(new, who));
+
+					Ok(())
+				},
+			}
+		}
+
+		/// This function remove the value from the storage.
+		#[pallet::weight(0)]
+		pub fn remove_value(origin: OriginFor<T>) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			// Check that there is something stored.
+			match <Value<T>>::get() {
+				// Return an error if the value has not been set.
+				None => Err(Error::<T>::NoneValue)?,
+				Some(_) => {
+					// Clear the storage
+					<Value<T>>::kill();
+
+					// Emit an event.
+					Self::deposit_event(Event::ValueRemoved(who));
 
 					Ok(())
 				},
