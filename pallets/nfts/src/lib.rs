@@ -28,6 +28,7 @@ pub mod pallet {
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
 
+	/// Is mapping UniqueAssetId with UniqueAssetDetails
 	#[pallet::storage]
 	#[pallet::getter(fn unique_asset)]
 	pub(super) type UniqueAsset<T: Config> =
@@ -70,17 +71,80 @@ pub mod pallet {
 		NotOwned,
 		/// Supply must be positive
 		NoSupply,
+		/// Type overflow
+		TypeOverflow,
 	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		#[pallet::weight(0)]
 		pub fn mint(origin: OriginFor<T>, metadata: Vec<u8>, supply: u128) -> DispatchResult {
+			// Ensure call is signed
+			let who = ensure_signed(origin)?;
+
+			// Ensure supply is positive
+			if supply <= 0 {
+				return Err(Error::<T>::NoSupply)?;
+			}
+
+			// Increments nonce for next ids
+			let id = Self::nonce();
+			<Nonce<T>>::set(Self::nonce().checked_add(1).ok_or(Error::<T>::TypeOverflow)?);
+
+			// Generates asset details
+			let asset_details = UniqueAssetDetails::new(who.clone(), metadata, supply);
+
+			// Stores unique asset
+			<UniqueAsset<T>>::insert(id, asset_details);
+
+			// Stores Account
+			<Account<T>>::insert(id, who.clone(), supply);
+
+			// Emmit event
+			Self::deposit_event(Event::Created { creator: who, asset_id: id });
+
 			Ok(())
 		}
 
 		#[pallet::weight(0)]
 		pub fn burn(origin: OriginFor<T>, asset_id: UniqueAssetId, amount: u128) -> DispatchResult {
+			// Ensure call is signed
+			let who = ensure_signed(origin)?;
+
+			// Ensure asset exists
+			ensure!(Self::unique_asset(asset_id).is_some(), Error::<T>::Unknown);
+
+			// Ensure own some
+			ensure!(Self::account(0, who.clone()) > 0, Error::<T>::NotOwned);
+
+			// Handle situation where origin is transfering more than his amount
+			let origin_amount = Self::account(0, who.clone());
+			let mut new_amount = amount;
+			if amount > origin_amount {
+				new_amount = origin_amount;
+			}
+
+			// Remove amount from origin Account
+			Account::<T>::mutate(asset_id, who.clone(), |total_amount| -> DispatchResult {
+				*total_amount -= new_amount;
+				Ok(())
+			})?;
+
+			let mut new_supply = 0;
+
+			// Remove amount from UniqueAsset
+			UniqueAsset::<T>::try_mutate(asset_id, |details| -> DispatchResult {
+				let asset_details = details.as_mut().ok_or(Error::<T>::Unknown)?;
+
+				asset_details.supply -= new_amount;
+				new_supply = asset_details.supply;
+
+				Ok(())
+			})?;
+
+			// Emmit event
+			Self::deposit_event(Event::Burned { asset_id, owner: who, total_supply: new_supply });
+
 			Ok(())
 		}
 
@@ -91,6 +155,37 @@ pub mod pallet {
 			amount: u128,
 			to: T::AccountId,
 		) -> DispatchResult {
+			// Ensure call is signed
+			let who = ensure_signed(origin)?;
+
+			// Ensure asset exists
+			ensure!(Self::unique_asset(asset_id).is_some(), Error::<T>::Unknown);
+
+			// Ensure own some
+			ensure!(Self::account(0, who.clone()) > 0, Error::<T>::NotOwned);
+
+			// Handle situation where origin is transfering more than his amount
+			let origin_amount = Self::account(0, who.clone());
+			let mut new_amount = amount;
+			if amount > origin_amount {
+				new_amount = origin_amount;
+			}
+
+			// Remove amount from origin Account
+			Account::<T>::mutate(asset_id, who.clone(), |total_amount| -> DispatchResult {
+				*total_amount -= new_amount;
+				Ok(())
+			})?;
+
+			// Add amount from origin Account
+			Account::<T>::mutate(asset_id, to.clone(), |total_amount| -> DispatchResult {
+				*total_amount += new_amount;
+				Ok(())
+			})?;
+
+			// Emmit event
+			Self::deposit_event(Event::Transferred { asset_id, from: who, to, amount: new_amount });
+
 			Ok(())
 		}
 	}
