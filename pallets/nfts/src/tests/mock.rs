@@ -55,6 +55,7 @@ impl system::Config for TestRuntime {
 
 impl pallet_nft::Config for TestRuntime {
 	type Event = Event;
+	type NFTId = u128;
 }
 
 // Build genesis storage according to the mock runtime.

@@ -22,13 +22,16 @@ scale-info = { version = "1.0", default-features = false, features = [
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12", optional = true }
 frame-support      = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
 frame-system       = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
+sp-runtime         = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
 sp-std             = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
+
+# local dependencies
+support = { path = "../../support", default-features = false }
 
 
 [dev-dependencies]
-sp-core    = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
-sp-io      = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
-sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
+sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
+sp-io   = { default-features = false, git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }
 
 [features]
 default = ["std"]

@@ -3488,6 +3488,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-loose-marketplace"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "pallet-nft",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "support",
+]
+
+[[package]]
 name = "pallet-nft"
 version = "0.1.0"
 dependencies = [
@@ -3500,6 +3517,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "support",
 ]
 
 [[package]]
@@ -3546,6 +3564,22 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "scale-info",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-tight-marketplace"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "pallet-nft",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -4501,9 +4535,11 @@ dependencies = [
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
+ "pallet-loose-marketplace",
  "pallet-nft",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
+ "pallet-tight-marketplace",
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
@@ -6491,6 +6527,10 @@ name = "subtle"
 version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6bdef32e8150c2a081110b42772ffe7d7c9032b606bc226c8260fd97e0976601"
+
+[[package]]
+name = "support"
+version = "0.1.0"
 
 [[package]]
 name = "syn"

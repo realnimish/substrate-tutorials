@@ -52,7 +52,9 @@ frame-system-benchmarking = { default-features = false, git = "https://github.co
 hex-literal               = { version = "0.3.4", optional = true }
 
 # Local Dependencies
-pallet-nft = { default-features = false, path = "../pallets/nfts" }
+pallet-loose-marketplace = { default-features = false, path = "../pallets/loosely-coupled-marketplace" }
+pallet-nft               = { default-features = false, path = "../pallets/nfts" }
+pallet-tight-marketplace = { default-features = false, path = "../pallets/tightly-coupled-marketplace" }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", tag = "monthly-2021-12" }

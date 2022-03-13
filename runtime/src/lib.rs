@@ -273,6 +273,19 @@ impl pallet_sudo::Config for Runtime {
 
 impl pallet_nft::Config for Runtime {
 	type Event = Event;
+	type NFTId = u128;
+}
+
+impl pallet_loose_marketplace::Config for Runtime {
+	type Currency = Balances;
+	type Event = Event;
+	type Ressource = NFTs;
+	type RessourceId = u128;
+}
+
+impl pallet_tight_marketplace::Config for Runtime {
+	type Currency = Balances;
+	type Event = Event;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -292,6 +305,8 @@ construct_runtime!(
 		Sudo: pallet_sudo,
 
 		NFTs: pallet_nft,
+		LooseMarketplace: pallet_loose_marketplace,
+		TightMarketplace: pallet_tight_marketplace,
 	}
 );
 

@@ -1,0 +1,10 @@
+[package]
+authors = ["Timothée Delabrouille"]
+edition = "2021"
+license = "Apache 2.0"
+name    = "support"
+version = "0.1.0"
+
+[features]
+default = ["std"]
+std     = []
